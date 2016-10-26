@@ -1,10 +1,15 @@
 #!/bin/bash
 
-echo 'Run name,Decomposition,Avg. atoms per domain,Min. atoms per domain,Max. atoms per domain,Atoms comm. per step force,Atoms comm. per step vsites,Atoms comm. per step LINCS,Performance (ns/day),Total core time,Wallclock time' >data.csv
+echo 'Run name,Num. nodes,Num. threads,Interconnect,Decomposition,Avg. atoms per domain,Min. atoms per domain,Max. atoms per domain,Atoms comm. per step force,Atoms comm. per step vsites,Atoms comm. per step LINCS,Performance (ns/day),Total core time,Wallclock time' >data.csv
 
 for RUN_NAME in `ls -1 runs` ; do
 
 	LOG="runs/$RUN_NAME/CYP19A1vs-MD.part0001.log"
+	METADATA="runs/$RUN_NAME/metadata.txt"
+
+	NUM_NODES=`grep '^Number of nodes: ' ${METADATA} | sed -e 's/^Number of nodes: //'`
+	NUM_THREADS=`grep '^Total threads: ' ${METADATA} | sed -e 's/^Total threads: //'`
+	INTERCONNECT=`grep '^Interconnect: ' ${METADATA} | sed -e 's/^Interconnect: //'`
 
 	DECOMPOSITION=`grep '^Domain decomposition grid' ${LOG} | sed -e 's/^Domain decomposition grid //' | sed -e 's/, separate PME ranks .*//'`
 
@@ -29,6 +34,10 @@ for RUN_NAME in `ls -1 runs` ; do
 	PERF_WALL_TIME=`grep '^[[:space:]]*Time:' ${LOG} | sed -e 's/^[[:space:]]*Time:[[:space:]]*[[:digit:],.]*[[:space:]]*\([[:digit:],.]*\).*/\1/'`
 
 	echo -n "$RUN_NAME" >>data.csv
+
+	echo -n ",$NUM_NODES" >>data.csv
+	echo -n ",$NUM_THREADS" >>data.csv
+	echo -n ",$INTERCONNECT" >>data.csv
 
 	echo -n ",$DECOMPOSITION" >>data.csv
 

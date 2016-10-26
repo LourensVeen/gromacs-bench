@@ -92,6 +92,7 @@ echo "OpenMP threads per rank: $THREADS_PER_RANK" >>metadata.txt
 echo "Total ranks: $NUM_RANKS" >>metadata.txt
 echo "Total threads: $NUM_THREADS" >>metadata.txt
 
+echo "Interconnect: $INTERCONNECT" >>metadata.txt
 
 ###################
 ### Run GROMACS ###
@@ -100,6 +101,5 @@ echo "Total threads: $NUM_THREADS" >>metadata.txt
 source ${HOME}/opt/gromacs5/bin/GMXRC.bash
 
 ${MPI_RUN} -np $NUM_RANKS --map-by node -v --display-map --display-allocation ${MCA_OPTS} ${GMXBIN}/gmx mdrun -nice 0 -deffnm CYP19A1vs-MD -c CYP19A1vs-MD.gro -cpi CYP19A1vs-MD.cpt -ntomp ${THREADS_PER_RANK} -noappend -maxh -1 >mdrun.out 2>mdrun.err
-
 
 
