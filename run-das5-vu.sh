@@ -24,7 +24,7 @@ for REPLICA in `seq 5` ; do
 
 	# CPU only with Ethernet over Infiniband
 	for NUM_NODES in 1 2 4 6 8 ; do
-		sbatch -N $NUM_NODES -C cpunode gromacs-bench.slurm run-n${NUM_NODES}_t0_g0_im_r${REPLICA} ethinf
+		sbatch -N $NUM_NODES -C cpunode gromacs-bench.slurm run_n${NUM_NODES}_t0_g0_im_r${REPLICA} ethinf
 	done
 done
 
