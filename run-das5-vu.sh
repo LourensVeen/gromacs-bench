@@ -5,7 +5,7 @@
 # Naming scheme: run_n<nodes>_t<TitanX_per_node>_g<GTX980_per_node>_i<interconnect>_r<replica>
 # where <interconnect> is i for Infiniband, e for Ethernet
 
-for REPLICA in `seq 5` ; do
+for REPLICA in `seq 1 10` ; do
 
 	# CPU only runs with Infiniband
 	for NUM_NODES in 1 2 4 8 16 24 ; do
@@ -13,7 +13,7 @@ for REPLICA in `seq 5` ; do
 	done
 
 	# CPU+GPU TitanX runs with Infiniband
-	for NUM_NODES in 1 2 4 6 8 ; do
+	for NUM_NODES in 1 2 4 6 8 12 ; do
 		sbatch -N $NUM_NODES -C TitanX --gres=gpu:1 gromacs-bench.slurm run_n${NUM_NODES}_t1_g0_ii_r${REPLICA} infiniband
 	done
 
