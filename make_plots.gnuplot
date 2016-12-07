@@ -176,10 +176,37 @@ plot \
 
 ####################################
 
+set output 'gpus_timespent.png'
+
+set yrange [0:100]
+set xrange [0:12]
+set xtics nomirror 2
+set x2label 'Threads'
+set x2range [0:384]
+set x2tics nomirror 64
+set ytics 25
+set ylabel '% Time spent'
+set key inside right top invert opaque
+
+plot \
+	'means_clean.csv' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):9 with filledcurves above x1 title 'Decomposition' \
+	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):9:($9+$10) with filledcurves title 'Comm.Coord.' \
+	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($9+$10):($9+$10+$11) with filledcurves title 'Calc. Force' \
+	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($9+$10+$11):($9+$10+$11+$12) with filledcurves title 'Comm. Force' \
+	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($9+$10+$11+$12):($9+$10+$11+$12+$13) with filledcurves title 'GPU Wait' \
+	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($9+$10+$11+$12+$13):($9+$10+$11+$12+$14) with filledcurves title 'Constraints'
+
+
+
+####################################
+
 set output 'practice.png'
 
 set key on inside right bottom autotitle columnheader box height 0.5
 set title 'Gromacs on Cartesius vs. Lisa (approximately)'
+set yrange [0:210]
+set ytics nomirror 30
+set ylabel 'Simulation speed (ns/day)'
 
 plot \
 	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):20 \
