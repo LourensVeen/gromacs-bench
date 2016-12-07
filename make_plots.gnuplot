@@ -81,30 +81,31 @@ plot \
 
 set output 'cpus_corehours.png'
 
-set title 'Core hours for 10ns run'
+set key off autotitle columnheader
+set title 'Core hours for 1ns run'
 set ylabel 'Core hours'
 set autoscale y
 set ytics autofreq
 
 plot \
-	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):($21 * 100 / 3600) \
+	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):($21 * 10 / 3600) \
 		with points notitle lc rgb '#00aeef' pt 7 ps 3 \
-	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($16 * 100 / 3600) \
+	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($16 * 10 / 3600) \
 		with lines notitle lc rgb '#00aeef' lw 3 \
-	, 'laptop.csv' using 1:($4 * 100 / 3600) with points notitle lc rgb '#400080' pt 7 ps 3
+	, 'laptop.csv' using 1:($4 * 10 / 3600) with points notitle lc rgb '#400080' pt 7 ps 3
 
 
 ####################################
 
 set output 'cpus_wallclock.png'
 
-set title 'Wallclock time for 10ns run'
-set ylabel 'Wallclock time (h)'
+set title 'Wallclock time for 1ns run'
+set ylabel 'Wallclock time (min)'
 
 plot \
-	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):($22 * 100 / 3600) \
+	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):($22 * 10 / 60) \
 		with points notitle lc rgb '#00aeef' pt 7 ps 3 \
-	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($17 * 100 / 3600) \
+	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($17 * 10 / 60) \
 		with lines notitle lc rgb '#00aeef' lw 3
 
 
