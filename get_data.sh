@@ -2,8 +2,9 @@
 
 echo 'Run name,Num. nodes,Num. threads,Num. TitanX,Num. GTX980,Interconnect,Decomposition,Avg. atoms per domain,Min. atoms per domain,Max. atoms per domain,Atoms comm. per step force,Atoms comm. per step vsites,Atoms comm. per step LINCS,% Decomposition,% Comm. Coord,% Force,% Comm. Force,% Wait GPU,% Constraints,Performance (ns/day),Total core time,Wallclock time,Which nodes' >data.csv
 
-for RUN_NAME in `ls -1 runs` ; do
+for RUN_NAME in `ls -1d runs/run*r[!0]*` ; do
 
+	RUN_NAME=`echo ${RUN_NAME} | sed -e 's%^runs/%%'`
 	LOG="runs/$RUN_NAME/CYP19A1vs-MD.part0001.log"
 	METADATA="runs/$RUN_NAME/metadata.txt"
 
@@ -85,7 +86,7 @@ for RUN_NAME in `ls -1 runs` ; do
 	echo -n ",$PERF_TOTAL_CORE_TIME" >>data.csv 
 	echo -n ",$PERF_WALL_TIME" >>data.csv
 
-	echo -n ",$WHICH_NODES" >>data.csv
+	echo -n ",\"$WHICH_NODES\"" >>data.csv
 
 	echo >>data.csv
 done
