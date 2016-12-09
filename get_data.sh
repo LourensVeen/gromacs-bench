@@ -1,9 +1,10 @@
 #!/bin/bash
 
-echo 'Run name,Num. nodes,Num. threads,Num. TitanX,Num. GTX980,Interconnect,Decomposition,Avg. atoms per domain,Min. atoms per domain,Max. atoms per domain,Atoms comm. per step force,Atoms comm. per step vsites,Atoms comm. per step LINCS,Performance (ns/day),Total core time,Wallclock time,Which nodes' >data.csv
+echo 'Run name,Num. nodes,Num. threads,Num. TitanX,Num. GTX980,Interconnect,Decomposition,Avg. atoms per domain,Min. atoms per domain,Max. atoms per domain,Atoms comm. per step force,Atoms comm. per step vsites,Atoms comm. per step LINCS,% Decomposition,% Neighbor search,% Comm. Coord,% Force,% Comm. Force,% Wait GPU local,% Wait GPU nonlocal,% Constraints,Performance (ns/day),Total core time,Wallclock time,Which nodes' >data.csv
 
-for RUN_NAME in `ls -1 runs` ; do
+for RUN_NAME in `ls -1d runs/run*r[!0]*` ; do
 
+	RUN_NAME=`echo ${RUN_NAME} | sed -e 's%^runs/%%'`
 	LOG="runs/$RUN_NAME/CYP19A1vs-MD.part0001.log"
 	METADATA="runs/$RUN_NAME/metadata.txt"
 
@@ -37,6 +38,23 @@ for RUN_NAME in `ls -1 runs` ; do
 	ATOMS_COMM_PER_STEP_LINCS=`grep '^ av. #atoms communicated per step for LINCS:' ${LOG} | sed -e 's/^ av. #atoms communicated per step for LINCS:  //'`
 
 
+	PERC_DECOMP=`grep '^ Domain decomp.  ' ${LOG} | sed -e 's/^ Domain decomp.[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*\([^[:space:]]*\)/\1/'`
+
+	PERC_NEIGHBOR_SEARCH=`grep '^ Neighbor search  ' ${LOG} | sed -e 's/^ Neighbor search[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*\([^[:space:]]*\)/\1/'`
+
+	PERC_COMM_COORD=`grep '^ Comm. coord.  ' ${LOG} | sed -e 's/^ Comm. coord.[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*\([^[:space:]]*\)/\1/'`
+
+	PERC_FORCE=`grep '^ Force    ' ${LOG} | sed -e 's/^ Force[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*\([^[:space:]]*\)/\1/'`
+
+	PERC_WAITCOMM=`grep '^ Wait + Comm. F   ' ${LOG} | sed -e 's/^ Wait + Comm. F[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*\([^[:space:]]*\)/\1/'`
+
+	PERC_WAITGPULOCAL=`grep '^ Wait GPU local   ' ${LOG} | sed -e 's/^ Wait GPU local[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*\([^[:space:]]*\)/\1/'`
+
+	PERC_WAITGPUNONLOCAL=`grep '^ Wait GPU nonlocal   ' ${LOG} | sed -e 's/^ Wait GPU nonlocal[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*\([^[:space:]]*\)/\1/'`
+
+	PERC_CONSTRAINTS=`grep '^ Constraints    ' ${LOG} | sed -e 's/^ Constraints[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*\([^[:space:]]*\)/\1/'`
+
+
 	PERF_NS_DAY=`grep '^Performance:' ${LOG} | sed -e 's/^Performance:[[:space:]]*\([[:alnum:],.]*\).*/\1/'`
 
 	PERF_TOTAL_CORE_TIME=`grep '^[[:space:]]*Time:' ${LOG} | sed -e 's/^[[:space:]]*Time:[[:space:]]*\([[:digit:],.]*\).*/\1/'`
@@ -61,11 +79,20 @@ for RUN_NAME in `ls -1 runs` ; do
 	echo -n ",$ATOMS_COMM_PER_STEP_VSITES" >>data.csv 
 	echo -n ",$ATOMS_COMM_PER_STEP_LINCS" >>data.csv 
 
+	echo -n ",$PERC_DECOMP" >>data.csv
+	echo -n ",$PERC_NEIGHBOR_SEARCH" >>data.csv
+	echo -n ",$PERC_COMM_COORD" >>data.csv
+	echo -n ",$PERC_FORCE" >>data.csv
+	echo -n ",$PERC_WAITCOMM" >>data.csv
+	echo -n ",$PERC_WAITGPULOCAL" >>data.csv
+	echo -n ",$PERC_WAITGPUNONLOCAL" >>data.csv
+	echo -n ",$PERC_CONSTRAINTS" >>data.csv
+
 	echo -n ",$PERF_NS_DAY" >>data.csv 
 	echo -n ",$PERF_TOTAL_CORE_TIME" >>data.csv 
 	echo -n ",$PERF_WALL_TIME" >>data.csv
 
-	echo -n ",$WHICH_NODES" >>data.csv
+	echo -n ",\"$WHICH_NODES\"" >>data.csv
 
 	echo >>data.csv
 done
