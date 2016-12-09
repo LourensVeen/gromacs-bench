@@ -15,6 +15,8 @@ set x2tics nomirror 128
 set ytics nomirror 30
 
 
+num_steps=50000
+
 ####################################
 
 set output 'laptop_cmp.png'
@@ -52,9 +54,9 @@ set ytics nomirror 30
 set yrange [0:210]
 
 plot \
-	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):20 \
+	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):22 \
 		with points notitle lc rgb '#00aeef' pt 7 ps 3 \
-	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):15 \
+	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):17 \
 		with lines notitle lc rgb '#00aeef' lw 3 \
 	, 'laptop.csv' using 1:3 with points notitle lc rgb '#400080' pt 7 ps 3
 
@@ -63,17 +65,35 @@ plot \
 
 set output 'cpus_timespent.png'
 
-set yrange [0:100]
-set ytics 25
-set ylabel '% Time spent'
-set key inside left center invert opaque
+set yrange [0:10]
+set ytics 1
+set ylabel 'Time spent per step (ms)'
+set key inside right top invert opaque
 
 plot \
-	'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):9 with filledcurves above x1 title 'Decomposition' \
-	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):9:($9+$10) with filledcurves title 'Comm.Coord.' \
-	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($9+$10):($9+$10+$11) with filledcurves title 'Calc. Force' \
-	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($9+$10+$11):($9+$10+$11+$12) with filledcurves title 'Comm. Force' \
-	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($9+$10+$11+$12):($9+$10+$11+$12+$14) with filledcurves title 'Constraints'
+	'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * $9 * 1000 / 100) \
+		with filledcurves above x1 title 'Decomposition' \
+	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * $9 * 1000 / 100):\
+		($19 / num_steps * ($9+$10) * 1000 / 100) \
+		with filledcurves title 'Neighbor search' \
+	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11) * 1000 / 100) \
+		with filledcurves title 'Comm. Coord.' \
+	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10+$11) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11+$12) * 1000 / 100) \
+		with filledcurves title 'Calc. Force' \
+	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10+$11+$12) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11+$12+$13) * 1000 / 100) \
+		with filledcurves title 'Comm. Force' \
+	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10+$11+$12+$13) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11+$12+$13+$16) * 1000 / 100) \
+		with filledcurves title 'Constraints'
 
 
 
@@ -88,9 +108,9 @@ set autoscale y
 set ytics autofreq
 
 plot \
-	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):($21 * 10 / 3600) \
+	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):($23 * 10 / 3600) \
 		with points notitle lc rgb '#00aeef' pt 7 ps 3 \
-	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($16 * 10 / 3600) \
+	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($18 * 10 / 3600) \
 		with lines notitle lc rgb '#00aeef' lw 3 \
 	, 'laptop.csv' using 1:($4 * 10 / 3600) with points notitle lc rgb '#400080' pt 7 ps 3
 
@@ -103,9 +123,9 @@ set title 'Wallclock time for 1ns run'
 set ylabel 'Wallclock time (min)'
 
 plot \
-	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):($22 * 10 / 60) \
+	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):($24 * 10 / 60) \
 		with points notitle lc rgb '#00aeef' pt 7 ps 3 \
-	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($17 * 10 / 60) \
+	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($19 * 10 / 60) \
 		with lines notitle lc rgb '#00aeef' lw 3
 
 
@@ -114,23 +134,57 @@ plot \
 
 set output 'cpus_ethernet.png'
 
-set key on inside right bottom autotitle columnheader box height 0.5
+set key on inside right bottom box autotitle columnheader height 0.5
 set title 'Influence of network'
 set yrange [0:210]
 set ytics nomirror 30
 set ylabel 'Simulation speed (ns/day)'
 
 plot \
-	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):20 \
+	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):22 \
 		with points notitle lc rgb '#00aeef' pt 7 ps 3 \
-	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):15 \
+	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):17 \
 		with lines title 'Infiniband' lc rgb '#00aeef' lw 3 \
-	, 'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'ethernet') ? $2 : 0/0):20 \
+	, 'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'ethernet') ? $2 : 0/0):22 \
 		with points notitle lc rgb '#ef6e00' pt 7 ps 3 \
-	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'ethernet') ? $4 : 0/0):15 \
+	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'ethernet') ? $4 : 0/0):17 \
 		with lines title 'Ethernet' lc rgb '#ef6e00' lw 3 \
-	, 'laptop.csv' using 1:($4 * 100 / 3600) with points notitle lc rgb '#400080' pt 7 ps 3
+	, 'laptop.csv' using 1:3 with points notitle lc rgb '#400080' pt 7 ps 3
 
+
+####################################
+
+set output 'ethernet_timespent.png'
+
+set yrange [0:10]
+set ytics 1
+set ylabel 'Time spent per step (ms)'
+set key inside right top invert opaque
+
+plot \
+	'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'ethernet') ? $4 : 0/0):\
+		($19 / num_steps * $9 * 1000 / 100) \
+		with filledcurves above x1 title 'Decomposition' \
+	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'ethernet') ? $4 : 0/0):\
+		($19 / num_steps * $9 * 1000 / 100):\
+		($19 / num_steps * ($9+$10) * 1000 / 100) \
+		with filledcurves title 'Neighbor search' \
+	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'ethernet') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11) * 1000 / 100) \
+		with filledcurves title 'Comm. Coord.' \
+	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'ethernet') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10+$11) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11+$12) * 1000 / 100) \
+		with filledcurves title 'Calc. Force' \
+	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'ethernet') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10+$11+$12) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11+$12+$13) * 1000 / 100) \
+		with filledcurves title 'Comm. Force' \
+	, '' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'ethernet') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10+$11+$12+$13) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11+$12+$13+$16) * 1000 / 100) \
+		with filledcurves title 'Constraints'
 
 ####################################
 
@@ -142,6 +196,10 @@ set autoscale x
 # disable x2 label and tics, but reserve space to preserve alignment
 set x2label ' '
 set x2tics 10000,10000
+
+set yrange [0:210]
+set ytics nomirror 30
+set ylabel 'Simulation speed (ns/day)'
 
 set boxwidth 0.5
 set style fill solid
@@ -161,40 +219,69 @@ set xrange [0:24]
 set xtics nomirror 4
 set x2label 'Threads'
 set x2tics nomirror 128
+set yrange [0:210]
+set ytics nomirror 30
+set ylabel 'Simulation speed (ns/day)'
 
 plot \
-	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):20 \
+	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):22 \
 		with points notitle lc rgb '#00aeef' pt 7 ps 3 \
-	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):15 \
+	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):17 \
 		with lines notitle lc rgb '#00aeef' lw 3 \
-	, 'data_clean.csv' using (($4 == 1 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):20 \
+	, 'data_clean.csv' using (($4 == 1 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):22 \
 		with points notitle lc rgb '#009f00' pt 7 ps 3 \
-	, 'means_clean.csv' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):15 \
+	, 'means_clean.csv' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):17 \
 		with lines notitle lc rgb '#009f00' lw 3 \
-	, 'laptop.csv' using 1:($4 * 100 / 3600) with points notitle lc rgb '#400080' pt 7 ps 3
+	, 'laptop.csv' using 1:3 with points notitle lc rgb '#400080' pt 7 ps 3
 
 
 ####################################
 
 set output 'gpus_timespent.png'
 
-set yrange [0:100]
 set xrange [0:12]
 set xtics nomirror 2
 set x2label 'Threads'
 set x2range [0:384]
 set x2tics nomirror 64
-set ytics 25
-set ylabel '% Time spent'
-set key inside right top invert opaque
+set ylabel 'Time spent per step (ms)'
+set yrange [0:10]
+set ytics 1
+
+set key inside right top nobox invert opaque
 
 plot \
-	'means_clean.csv' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):9 with filledcurves above x1 title 'Decomposition' \
-	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):9:($9+$10) with filledcurves title 'Comm.Coord.' \
-	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($9+$10):($9+$10+$11) with filledcurves title 'Calc. Force' \
-	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($9+$10+$11):($9+$10+$11+$12) with filledcurves title 'Comm. Force' \
-	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($9+$10+$11+$12):($9+$10+$11+$12+$13) with filledcurves title 'GPU Wait' \
-	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):($9+$10+$11+$12+$13):($9+$10+$11+$12+$14) with filledcurves title 'Constraints'
+	'means_clean.csv' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * $9 * 1000 / 100) \
+		with filledcurves above x1 title 'Decomposition' \
+	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * $9 * 1000 / 100):\
+		($19 / num_steps * ($9+$10) * 1000 / 100) \
+		with filledcurves title 'Neighbor search' \
+	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11) * 1000 / 100) \
+		with filledcurves title 'Comm. Coord.' \
+	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10+$11) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11+$12) * 1000 / 100) \
+		with filledcurves title 'Calc. Force' \
+	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10+$11+$12) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11+$12+$13) * 1000 / 100) \
+		with filledcurves title 'Comm. Force' \
+	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10+$11+$12+$13) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11+$12+$13+$14) * 1000 / 100) \
+		with filledcurves title 'Wait GPU local' \
+	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10+$11+$12+$13+$14) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11+$12+$13+$14+$15) * 1000 / 100) \
+		with filledcurves title 'Wait GPU nonlocal' \
+	, '' using (($2 == 1 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):\
+		($19 / num_steps * ($9+$10+$11+$12+$13+$14+$15) * 1000 / 100):\
+		($19 / num_steps * ($9+$10+$11+$12+$13+$14+$15+$16) * 1000 / 100) \
+		with filledcurves title 'Constraints'
 
 
 
@@ -204,22 +291,26 @@ set output 'practice.png'
 
 set key on inside right bottom autotitle columnheader box height 0.5
 set title 'Gromacs on Cartesius vs. Lisa (approximately)'
+set xrange [0:24]
+set xtics 4
+set x2range [0:768]
+set x2tics 128
 set yrange [0:210]
 set ytics nomirror 30
 set ylabel 'Simulation speed (ns/day)'
 
 plot \
-	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):20 \
+	'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):22 \
 		with points notitle lc rgb '#00aeef' pt 7 ps 3 \
-	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):15 \
+	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):17 \
 		with lines title 'Cartesius CPU' lc rgb '#00aeef' lw 3 \
-	, 'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'ethernet') ? $2 : 0/0):20 \
+	, 'data_clean.csv' using (($4 == 0 && $5 == 0 && stringcolumn(6) eq 'ethernet') ? $2 : 0/0):22 \
 		with points notitle lc rgb '#ef6e00' pt 7 ps 3 \
-	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'ethernet') ? $4 : 0/0):15 \
+	, 'means_clean.csv' using (($2 == 0 && $3 == 0 && stringcolumn(1) eq 'ethernet') ? $4 : 0/0):17 \
 		with lines title 'Lisa CPU' lc rgb '#ef6e00' lw 3 \
-	, 'data_clean.csv' using (($4 == 0 && $5 == 2 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):20 \
+	, 'data_clean.csv' using (($4 == 0 && $5 == 2 && stringcolumn(6) eq 'infiniband') ? $2 : 0/0):22 \
 		with points notitle lc rgb '#ae00ef' pt 7 ps 3 \
-	, 'means_clean.csv' using (($2 == 0 && $3 == 2 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):15 \
+	, 'means_clean.csv' using (($2 == 0 && $3 == 2 && stringcolumn(1) eq 'infiniband') ? $4 : 0/0):17 \
 		with lines title 'Cartesius GPU' lc rgb '#ae00ef' lw 3 \
 	, 'laptop.csv' using 1:($4 * 100 / 3600) with points notitle lc rgb '#400080' pt 7 ps 3
 
