@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo 'Run name,Num. nodes,Num. threads,Num. TitanX,Num. GTX980,Interconnect,Decomposition,Avg. atoms per domain,Min. atoms per domain,Max. atoms per domain,Atoms comm. per step force,Atoms comm. per step vsites,Atoms comm. per step LINCS,% Decomposition,% Neighbor search,% Comm. Coord,% Force,% Comm. Force,% Wait GPU local,% Wait GPU nonlocal,% Constraints,Performance (ns/day),Total core time,Wallclock time,Which nodes' >data.csv
+echo 'Run name,Num. nodes,Num. threads,Num. TitanX,Num. GTX980,Num. GTX1080,Interconnect,Decomposition,Avg. atoms per domain,Min. atoms per domain,Max. atoms per domain,Atoms comm. per step force,Atoms comm. per step vsites,Atoms comm. per step LINCS,% Decomposition,% Neighbor search,% Comm. Coord,% Force,% Comm. Force,% Wait GPU local,% Wait GPU nonlocal,% Constraints,Performance (ns/day),Total core time,Wallclock time,Which nodes' >data.csv
 
 for RUN_NAME in `ls -1d runs/run*r[!0]*` ; do
 
@@ -20,6 +20,8 @@ for RUN_NAME in `ls -1d runs/run*r[!0]*` ; do
 		NUM_TITANX="$NUM_GPUS"
 	elif grep -q 'NVIDIA GeForce GTX 980' ${LOG} ; then
 		NUM_GTX980="$NUM_GPUS"
+	elif grep -q 'NVIDIA GeForce GTX 1080' ${LOG} ; then
+		NUM_GTX1080="$NUM_GPUS"
 	fi
 
 	DECOMPOSITION=`grep '^Domain decomposition grid' ${LOG} | sed -e 's/^Domain decomposition grid //' | sed -e 's/, separate PME ranks .*//'`
@@ -67,6 +69,7 @@ for RUN_NAME in `ls -1d runs/run*r[!0]*` ; do
 	echo -n ",$NUM_THREADS" >>data.csv
 	echo -n ",$NUM_TITANX" >>data.csv
 	echo -n ",$NUM_GTX980" >> data.csv
+	echo -n ",$NUM_GTX1080" >>data.csv
 	echo -n ",$INTERCONNECT" >>data.csv
 
 	echo -n ",$DECOMPOSITION" >>data.csv
